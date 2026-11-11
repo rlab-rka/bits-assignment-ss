@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "Student Course Registration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "catalog_url",
+      "value": "http://localhost:8001"
+    },
+    {
+      "key": "enrollment_url",
+      "value": "http://localhost:8002"
+    },
+    {
+      "key": "course_id",
+      "value": "1"
+    },
+    {
+      "key": "enrollment_id",
+      "value": "1"
+    },
+    {
+      "key": "student_id",
+      "value": "STU1001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Course Catalog",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{catalog_url}}/health"
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"course_code\": \"CS501\", \"title\": \"Cloud Computing\", \"description\": \"Introduction to cloud platforms and services\"}"
+            },
+            "url": "{{catalog_url}}/courses"
+          }
+        },
+        {
+          "name": "List Courses",
+          "request": {
+            "method": "GET",
+            "url": "{{catalog_url}}/courses"
+          }
+        },
+        {
+          "name": "Get Course",
+          "request": {
+            "method": "GET",
+            "url": "{{catalog_url}}/courses/{{course_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollment",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{enrollment_url}}/health"
+          }
+        },
+        {
+          "name": "Create Enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"student_id\": \"STU1001\", \"student_name\": \"Ravi Kumar\", \"course_id\": 1}"
+            },
+            "url": "{{enrollment_url}}/enrollments"
+          }
+        },
+        {
+          "name": "List Enrollments",
+          "request": {
+            "method": "GET",
+            "url": "{{enrollment_url}}/enrollments"
+          }
+        },
+        {
+          "name": "Student Enrollments",
+          "request": {
+            "method": "GET",
+            "url": "{{enrollment_url}}/students/{{student_id}}/enrollments"
+          }
+        },
+        {
+          "name": "Cancel Enrollment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{enrollment_url}}/enrollments/{{enrollment_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

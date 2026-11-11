@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enrollment
+  namespace: student-registration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enrollment
+  template:
+    metadata:
+      labels:
+        app: enrollment
+    spec:
+      containers:
+        - name: enrollment
+          image: enrollment-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: sqlite:////app/data/enrollment.db
+            - name: COURSE_CATALOG_URL
+              value: http://course-catalog:8000
+          volumeMounts:
+            - name: enrollment-data
+              mountPath: /app/data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: enrollment-data
+          persistentVolumeClaim:
+            claimName: enrollment-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: enrollment
+  namespace: student-registration
+spec:
+  type: ClusterIP
+  selector:
+    app: enrollment
+  ports:
+    - port: 8000
+      targetPort: 8000

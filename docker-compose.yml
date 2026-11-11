@@ -1,0 +1,33 @@
+services:
+  course-catalog:
+    build: ./course-catalog-service
+    image: course-catalog:1.0
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: sqlite:////app/data/catalog.db
+    volumes:
+      - catalog-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  enrollment:
+    build: ./enrollment-service
+    image: enrollment-service:1.0
+    ports:
+      - "8002:8000"
+    environment:
+      DATABASE_URL: sqlite:////app/data/enrollment.db
+      COURSE_CATALOG_URL: http://course-catalog:8000
+    volumes:
+      - enrollment-data:/app/data
+    depends_on:
+      course-catalog:
+        condition: service_healthy
+
+volumes:
+  catalog-data:
+  enrollment-data:
